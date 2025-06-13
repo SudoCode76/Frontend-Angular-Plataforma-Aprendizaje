@@ -40,7 +40,7 @@ export class LoginComponent {
     this.isLoading = true;
     setTimeout(() => {
       this.isLoading = false;
-      this.router.navigate(['/student/dashboard']);
+      this.router.navigate(['/estudiante/dashboard']);
     }, 1500);
   }
 
