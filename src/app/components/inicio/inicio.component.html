@@ -1,0 +1,141 @@
+<div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+<app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="container mx-auto px-4 py-20 text-center">
+    <div class="max-w-4xl mx-auto">
+    <span class="inline-block mb-4 bg-purple-100 text-purple-700 rounded px-3 py-1 font-semibold">
+      🚀 Más de 50,000 estudiantes activos
+    </span>
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+        Aprende a Programar de Forma Interactiva
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        Domina los lenguajes de programación más populares con lecciones gamificadas, mentores expertos y una
+        comunidad que te apoya en cada paso.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a routerLink="/login">
+          <button
+            class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-8 py-3 rounded shadow"
+          >
+            Empezar Ahora
+            <!-- Puedes usar un SVG para ArrowRight -->
+            <svg class="ml-2 h-5 w-5 inline" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </a>
+        <button class="border border-purple-600 text-purple-600 text-lg px-8 py-3 rounded hover:bg-purple-50 transition">
+          Ver Demo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="container mx-auto px-4 py-20">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold mb-4">¿Por qué elegir CodeLearn?</h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Nuestra plataforma combina lo mejor del aprendizaje gamificado con el apoyo personalizado de mentores
+        expertos.
+      </p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div *ngFor="let feature of features; let i = index"
+           class="cursor-pointer transition-all duration-300 hover:shadow-lg"
+           [ngClass]="{'ring-2 ring-purple-500 shadow-lg': activeFeature === i}"
+           (mouseenter)="setActiveFeature(i)">
+        <div class="text-center">
+          <div class="mx-auto mb-4 p-3 bg-gradient-to-r from-purple-100 to-blue-100 rounded-full text-purple-600 w-12 h-12 flex items-center justify-center text-2xl">
+            {{ feature.icon }}
+          </div>
+          <div class="text-xl font-semibold mb-2">{{ feature.title }}</div>
+        </div>
+        <div class="text-center text-gray-600">{{ feature.description }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Languages Section -->
+  <section class="bg-white py-20">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Lenguajes Disponibles</h2>
+        <p class="text-xl text-gray-600">Aprende los lenguajes más demandados en la industria tecnológica</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let language of languages" class="hover:shadow-lg transition-shadow duration-300 rounded bg-white">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div [ngClass]="language.color" class="w-4 h-4 rounded-full"></div>
+                <h3 class="text-lg font-semibold">{{ language.name }}</h3>
+              </div>
+              <span class="inline-block bg-gray-100 text-gray-700 rounded px-2 py-1 text-xs font-semibold">{{ language.students }} estudiantes</span>
+            </div>
+            <div class="flex items-center space-x-2 text-sm text-gray-600">
+              <!-- Puedes usar un SVG para el check -->
+              <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Lecciones interactivas disponibles</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+    <div class="container mx-auto px-4">
+      <div class="grid md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-4xl font-bold mb-2">50K+</div>
+          <div class="text-purple-100">Estudiantes Activos</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">1,200+</div>
+          <div class="text-purple-100">Mentores Expertos</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">95%</div>
+          <div class="text-purple-100">Tasa de Satisfacción</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">24/7</div>
+          <div class="text-purple-100">Soporte Disponible</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="container mx-auto px-4 py-20 text-center">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-4xl font-bold mb-6">¿Listo para comenzar tu viaje en programación?</h2>
+      <p class="text-xl text-gray-600 mb-8">
+        Únete a miles de estudiantes que ya están aprendiendo y mejorando sus habilidades de programación.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a routerLink="/login">
+          <button
+            class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-8 py-3 rounded shadow"
+          >
+            Comenzar como Estudiante
+          </button>
+        </a>
+        <a routerLink="/login">
+          <button class="border border-purple-600 text-purple-600 text-lg px-8 py-3 rounded hover:bg-purple-50 transition">
+            Aplicar como Mentor
+          </button>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
