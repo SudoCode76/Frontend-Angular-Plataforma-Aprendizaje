@@ -29,12 +29,12 @@ export class EncontrarMentorComponent {
     javascript: [
       {
         id: 1,
-        name: "Dr. JavaScript",
+        name: "Tomas Zapata Ortiz",
         specialties: ["JavaScript", "React", "Node.js"],
         rating: 4.9,
         totalSessions: 156,
         experience: "5+ años",
-        teamsId: "drjavascript@company.com",
+        teamsId: "cb.tomas.zapata.o@upds.net.bo",
         avatar: "DJ",
         status: "online",
         description: "Experto en JavaScript moderno, React y desarrollo full-stack",
