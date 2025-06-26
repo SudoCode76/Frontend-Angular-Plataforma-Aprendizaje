@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { SessionService } from '../../services/session.service';
-import {NgClass, NgIf} from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -20,8 +19,13 @@ export class LoginComponent {
   selectedTab: 'student' | 'mentor' = 'student'; // Para alternar entre los formularios de estudiante y mentor
   studentForm: FormGroup; // Formulario para estudiante
   mentorForm: FormGroup; // Formulario para mentor
+  errorMessage: string | null = null; // Mensaje de error para mostrar en el formulario
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     // Inicializamos los formularios con validaciones
     this.studentForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],  // Validación para el email
@@ -43,6 +47,7 @@ export class LoginComponent {
   handleStudentLogin() {
     if (this.studentForm.invalid) return;  // Si el formulario es inválido, no hacer nada
     this.isLoading = true;  // Activamos el cargador
+    this.errorMessage = null; // Limpiamos el mensaje de error
 
     const { email, password } = this.studentForm.value;  // Obtenemos los valores del formulario
 
@@ -56,7 +61,9 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Error de autenticación', error);
-        // Aquí podrías agregar un mensaje para mostrar al usuario si hay un error
+        // Mostramos el mensaje de error cuando las credenciales son incorrectas
+        this.errorMessage = 'Las credenciales son incorrectas. Por favor, verifica tu email y contraseña.';
+        this.isLoading = false;  // Desactivamos el cargador una vez mostrado el error
       },
       () => {
         this.isLoading = false;  // Desactivamos el cargador
@@ -68,6 +75,7 @@ export class LoginComponent {
   handleMentorLogin() {
     if (this.mentorForm.invalid) return;  // Si el formulario es inválido, no hacer nada
     this.isLoading = true;  // Activamos el cargador
+    this.errorMessage = null; // Limpiamos el mensaje de error
 
     const { email, password } = this.mentorForm.value;  // Obtenemos los valores del formulario
 
@@ -81,7 +89,9 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Error de autenticación', error);
-        // Aquí podrías agregar un mensaje para mostrar al usuario si hay un error
+        // Mostramos el mensaje de error cuando las credenciales son incorrectas
+        this.errorMessage = 'Las credenciales son incorrectas. Por favor, verifica tu email y contraseña.';
+        this.isLoading = false;  // Desactivamos el cargador una vez mostrado el error
       },
       () => {
         this.isLoading = false;  // Desactivamos el cargador
