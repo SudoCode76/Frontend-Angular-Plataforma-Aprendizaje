@@ -16,17 +16,12 @@ import {NgClass, NgIf} from '@angular/common';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  isLoading = false;  // Estado para mostrar el cargador mientras se procesa el inicio de sesión
+  isLoading = false; // Estado para mostrar el cargador mientras se procesa el inicio de sesión
   selectedTab: 'student' | 'mentor' = 'student'; // Para alternar entre los formularios de estudiante y mentor
   studentForm: FormGroup; // Formulario para estudiante
   mentorForm: FormGroup; // Formulario para mentor
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authService: AuthService,
-    private sessionService: SessionService  // Inyectamos el servicio de sesión
-  ) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     // Inicializamos los formularios con validaciones
     this.studentForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],  // Validación para el email
@@ -54,8 +49,9 @@ export class LoginComponent {
     this.authService.loginStudent(email, password).subscribe(
       (authData) => {
         console.log('Usuario autenticado como estudiante', authData);
-        // Guardamos el ID del estudiante y el token en el servicio de sesión
-        this.sessionService.setSession(authData.record, authData.token);
+        // Guardamos el ID del estudiante y el token en el localStorage
+        localStorage.setItem('studentId', authData.record.id);
+        localStorage.setItem('token', authData.token);
         this.router.navigate(['/estudiante/dashboard']);  // Redirigimos al dashboard
       },
       (error) => {
@@ -78,8 +74,9 @@ export class LoginComponent {
     this.authService.loginMentor(email, password).subscribe(
       (authData) => {
         console.log('Usuario autenticado como mentor', authData);
-        // Guardamos el ID del mentor y el token en el servicio de sesión
-        this.sessionService.setSession(authData.record, authData.token);
+        // Guardamos el ID del mentor y el token en el localStorage
+        localStorage.setItem('mentorId', authData.record.id);
+        localStorage.setItem('token', authData.token);
         this.router.navigate(['/mentor/dashboard']);  // Redirigimos al dashboard del mentor
       },
       (error) => {
