@@ -1,8 +1,17 @@
 import { Component } from '@angular/core';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-mentor',
-  imports: [],
+  imports: [
+    NgIf,
+    RouterLink,
+    NgClass,
+    NgForOf,
+    FormsModule
+  ],
   templateUrl: './dashboard-mentor.component.html',
   styleUrl: './dashboard-mentor.component.css'
 })

@@ -1,1 +1,348 @@
-<p>dashboard-mentor works!</p>
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white border-b">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
+          <!-- GraduationCap SVG -->
+          <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10s-7-5.5-10-5.5S2 10 2 10l10 6 10-6z"></path>
+            <path d="M2 10v6a2 2 0 0 0 2 2h2"></path>
+            <path d="M22 10v6a2 2 0 0 1-2 2h-2"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">CodeLearn</h1>
+          <p class="text-sm text-gray-600">Dashboard del Mentor</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-lg">
+          <svg *ngIf="isOnline; else offlineIcon" class="h-5 w-5 text-green-500" fill="none" stroke="currentColor"
+               stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 1l22 22"></path>
+            <path d="M8.5 16.5a6.5 6.5 0 0 0 9.19-9.19"></path>
+            <path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10a10 10 0 0 1-1.53 5.25"></path>
+          </svg>
+          <ng-template #offlineIcon>
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 1l22 22"></path>
+              <path d="M8.5 16.5a6.5 6.5 0 0 0 9.19-9.19"></path>
+              <path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10a10 10 0 0 1-1.53 5.25"></path>
+            </svg>
+          </ng-template>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium">{{ isOnline ? 'En línea' : 'Fuera de línea' }}</span>
+            <span class="text-xs text-gray-500">
+              {{ isOnline ? 'Disponible para estudiantes' : 'No disponible' }}
+            </span>
+          </div>
+          <input
+            type="checkbox"
+            [(ngModel)]="isOnline"
+            class="ml-2 accent-blue-600"
+          />
+        </div>
+        <div class="flex items-center space-x-2">
+          <!-- Star SVG -->
+          <svg class="h-5 w-5 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15 8.6 22 9.2 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.2 9 8.6 12 2"></polygon>
+          </svg>
+          <span class="font-semibold">{{ stats.rating }}</span>
+        </div>
+        <div class="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-lg font-semibold text-gray-600">
+          MT
+        </div>
+        <a routerLink="/login">
+          <button class="p-2 rounded hover:bg-gray-100" aria-label="Logout">
+            <!-- LogOut SVG -->
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid lg:grid-cols-4 gap-8">
+      <!-- Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Profile Card -->
+        <div class="bg-white rounded shadow text-center p-6">
+          <div class="h-20 w-20 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center text-lg font-semibold text-gray-600">
+            MT
+          </div>
+          <div class="font-bold text-lg">{{ profileData.name }}</div>
+          <div class="text-gray-500">{{ profileData.title }}</div>
+          <div class="flex items-center justify-center space-x-2 mt-2">
+            <div class="w-3 h-3 rounded-full" [ngClass]="isOnline ? 'bg-green-500' : 'bg-gray-400'"></div>
+            <span class="text-sm" [ngClass]="isOnline ? 'text-green-600' : 'text-gray-500'">
+              {{ isOnline ? 'Disponible' : 'No disponible' }}
+            </span>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">📍 {{ profileData.department }}, Bolivia</div>
+          <div class="grid grid-cols-2 gap-4 text-center mt-4">
+            <div>
+              <div class="text-2xl font-bold text-blue-600">{{ stats.totalStudents }}</div>
+              <div class="text-xs text-gray-600">Estudiantes</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-green-600">{{ stats.completedSessions }}</div>
+              <div class="text-xs text-gray-600">Sesiones</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center space-x-1 mt-4">
+            <!-- Star SVG -->
+            <svg class="h-4 w-4 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15 8.6 22 9.2 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.2 9 8.6 12 2"></polygon>
+            </svg>
+            <span class="font-semibold">{{ stats.rating }}</span>
+          </div>
+          <div class="text-xs text-gray-600">Calificación promedio</div>
+        </div>
+
+        <!-- Specialties -->
+        <div class="bg-white rounded shadow p-6">
+          <div class="font-bold text-lg mb-2">Especialidades</div>
+          <div class="space-y-2">
+            <div *ngFor="let lang of profileData.programmingLanguages" class="w-full text-center bg-yellow-100 text-yellow-800 rounded py-1">{{ lang }}</div>
+          </div>
+        </div>
+
+        <!-- Languages -->
+        <div class="bg-white rounded shadow p-6">
+          <div class="font-bold text-lg mb-2">Idiomas</div>
+          <div class="space-y-2">
+            <div *ngFor="let lang of profileData.languages" class="w-full text-center bg-blue-100 text-blue-800 rounded py-1">{{ lang }}</div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="bg-white rounded shadow p-6">
+          <div class="font-bold text-lg mb-2">Estadísticas Hoy</div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">Estado</span>
+            <span class="rounded px-2 py-1 text-xs" [ngClass]="isOnline ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+              {{ isOnline ? 'En línea' : 'Fuera de línea' }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-sm text-gray-600">Sesiones hoy</span>
+            <span class="font-semibold">{{ stats.sessionsToday }}</span>
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-sm text-gray-600">Tiempo en línea</span>
+            <span class="font-semibold">{{ isOnline ? '4h 32m' : '0h 0m' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="lg:col-span-3">
+        <!-- Tabs -->
+        <div class="bg-white rounded shadow mb-6">
+          <div class="flex border-b">
+            <button
+              class="flex-1 px-4 py-2 font-semibold"
+              [ngClass]="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'"
+              (click)="setTab('overview')">
+              <!-- TrendingUp SVG -->
+              <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              Resumen
+            </button>
+            <button
+              class="flex-1 px-4 py-2 font-semibold"
+              [ngClass]="currentTab === 'profile' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'"
+              (click)="setTab('profile')">
+              <!-- Settings SVG -->
+              <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 7 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.5H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09A1.65 1.65 0 0 0 11 3.09V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1z"></path>
+              </svg>
+              Editar Perfil
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs Content -->
+        <div *ngIf="currentTab === 'overview'" class="space-y-6">
+          <!-- Online Status Card -->
+          <div class="bg-white rounded shadow border-2" [ngClass]="isOnline ? 'border-green-200 bg-green-50' : 'border-gray-200'">
+            <div class="p-6">
+              <div class="font-bold flex items-center mb-2">
+                <svg *ngIf="isOnline; else wifiOff" class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 1l22 22"></path>
+                  <path d="M8.5 16.5a6.5 6.5 0 0 0 9.19-9.19"></path>
+                  <path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10a10 10 0 0 1-1.53 5.25"></path>
+                </svg>
+                <ng-template #wifiOff>
+                  <svg class="h-5 w-5 text-gray-400 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                       viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 1l22 22"></path>
+                    <path d="M8.5 16.5a6.5 6.5 0 0 0 9.19-9.19"></path>
+                    <path d="M2 12a10 10 0 0 1 10-10c5.52 0 10 4.48 10 10a10 10 0 0 1-1.53 5.25"></path>
+                  </svg>
+                </ng-template>
+                Estado de Disponibilidad
+              </div>
+              <div class="mb-2 text-gray-600">
+                {{ isOnline
+                ? 'Estás visible para los estudiantes. Pueden contactarte directamente a través de Teams.'
+                : 'No estás disponible para nuevas consultas. Activa tu estado para recibir estudiantes.' }}
+              </div>
+              <div class="flex items-center justify-between mt-2">
+                <div>
+                  <div class="font-medium">
+                    {{ isOnline ? '🟢 Disponible para consultas' : '🔴 No disponible' }}
+                  </div>
+                  <div class="text-sm text-gray-600 mt-1">
+                    {{ isOnline
+                    ? 'Los estudiantes pueden ver tu perfil y contactarte'
+                    : "Cambia tu estado a 'En línea' para recibir estudiantes" }}
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="isOnline"
+                  class="ml-2 accent-blue-600"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- Stats Overview -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white rounded shadow p-6 text-center">
+              <!-- Users SVG -->
+              <svg class="h-8 w-8 mx-auto mb-2 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M7 21v-2a4 4 0 0 1-3-3.87"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <div class="text-2xl font-bold">{{ stats.totalStudents }}</div>
+              <div class="text-sm text-gray-600">Total Estudiantes</div>
+            </div>
+            <div class="bg-white rounded shadow p-6 text-center">
+              <!-- MessageCircle SVG -->
+              <svg class="h-8 w-8 mx-auto mb-2 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <div class="text-2xl font-bold">{{ stats.completedSessions }}</div>
+              <div class="text-sm text-gray-600">Sesiones Completadas</div>
+            </div>
+            <div class="bg-white rounded shadow p-6 text-center">
+              <!-- Star SVG -->
+              <svg class="h-8 w-8 mx-auto mb-2 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15 8.6 22 9.2 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.2 9 8.6 12 2"></polygon>
+              </svg>
+              <div class="text-2xl font-bold">{{ stats.rating }}</div>
+              <div class="text-sm text-gray-600">Calificación</div>
+            </div>
+            <div class="bg-white rounded shadow p-6 text-center">
+              <!-- Clock SVG -->
+              <svg class="h-8 w-8 mx-auto mb-2 text-purple-600" fill="none" stroke="currentColor" stroke-width="2"
+                   viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <div class="text-2xl font-bold">{{ stats.sessionsToday }}</div>
+              <div class="text-sm text-gray-600">Sesiones Hoy</div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="currentTab === 'profile'" class="space-y-6">
+          <div class="bg-white rounded shadow p-6">
+            <div class="font-bold text-lg mb-4">Información Personal</div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="name" class="block text-gray-700 mb-1">Nombre completo</label>
+                <input id="name" class="w-full border px-3 py-2 rounded" [(ngModel)]="profileData.name" />
+              </div>
+              <div>
+                <label for="title" class="block text-gray-700 mb-1">Título profesional</label>
+                <input id="title" class="w-full border px-3 py-2 rounded" [(ngModel)]="profileData.title" />
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="bio" class="block text-gray-700 mb-1">Biografía</label>
+              <textarea id="bio" class="w-full border px-3 py-2 rounded" [(ngModel)]="profileData.bio" rows="3"></textarea>
+            </div>
+            <div>
+              <label for="department" class="block text-gray-700 mb-1">Departamento (Bolivia)</label>
+              <select id="department" class="w-full border px-3 py-2 rounded" [(ngModel)]="profileData.department">
+                <option value="" disabled>Selecciona tu departamento</option>
+                <option *ngFor="let dept of bolivianDepartments" [value]="dept">{{ dept }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="bg-white rounded shadow p-6">
+            <div class="font-bold text-lg mb-4">Lenguajes de Programación</div>
+            <div class="flex flex-wrap gap-2 mb-3">
+              <span *ngFor="let lang of profileData.programmingLanguages" class="bg-yellow-100 text-yellow-800 rounded px-2 py-1 flex items-center gap-1">
+                {{ lang }}
+                <button type="button" class="ml-1 text-red-600" (click)="removeProgrammingLanguage(lang)">
+                  &times;
+                </button>
+              </span>
+            </div>
+            <div class="flex gap-2">
+              <select class="flex-1 border px-3 py-2 rounded" [(ngModel)]="newProgrammingLanguage">
+                <option value="" disabled>Selecciona un lenguaje</option>
+                <option *ngFor="let lang of availableProgrammingLanguages" [value]="lang" [disabled]="profileData.programmingLanguages.includes(lang)">
+                  {{ lang }}
+                </option>
+              </select>
+              <button class="bg-blue-600 text-white px-3 py-2 rounded" (click)="addProgrammingLanguage()" [disabled]="!newProgrammingLanguage">
+                +
+              </button>
+            </div>
+          </div>
+          <div class="bg-white rounded shadow p-6">
+            <div class="font-bold text-lg mb-4">Idiomas que hablas</div>
+            <div class="flex flex-wrap gap-2 mb-3">
+              <span *ngFor="let lang of profileData.languages" class="bg-blue-100 text-blue-800 rounded px-2 py-1 flex items-center gap-1">
+                {{ lang }}
+                <button type="button" class="ml-1 text-red-600" (click)="removeLanguage(lang)">
+                  &times;
+                </button>
+              </span>
+            </div>
+            <div class="flex gap-2">
+              <select class="flex-1 border px-3 py-2 rounded" [(ngModel)]="newLanguage">
+                <option value="" disabled>Selecciona un idioma</option>
+                <option *ngFor="let lang of availableLanguages" [value]="lang" [disabled]="profileData.languages.includes(lang)">
+                  {{ lang }}
+                </option>
+              </select>
+              <button class="bg-blue-600 text-white px-3 py-2 rounded" (click)="addLanguage()" [disabled]="!newLanguage">
+                +
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded" (click)="handleSaveProfile()">
+              Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

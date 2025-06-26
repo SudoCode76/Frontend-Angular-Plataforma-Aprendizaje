@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-encontrar-mentor',
   imports: [
     NgClass,
     NgForOf,
-    NgIf
+    NgIf,
+    RouterLink
   ],
   templateUrl: './encontrar-mentor.component.html',
   styleUrl: './encontrar-mentor.component.css'
