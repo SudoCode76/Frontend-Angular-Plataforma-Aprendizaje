@@ -81,6 +81,7 @@
             <div class="text-gray-500 mb-4">Continúa tu viaje de aprendizaje en programación</div>
           </div>
           <form [formGroup]="studentForm" (ngSubmit)="handleStudentLogin()" class="space-y-4 p-6">
+
             <div class="space-y-2">
               <label for="student-email" class="block text-sm font-medium">Email</label>
               <input id="student-email" type="email" formControlName="email" required class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-purple-300" placeholder="estudiante@ejemplo.com" />
@@ -95,12 +96,14 @@
                 Contraseña requerida
               </div>
             </div>
+
             <button
               type="submit"
               class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 rounded font-semibold transition disabled:opacity-60"
               [disabled]="isLoading || studentForm.invalid">
               {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión como Estudiante' }}
             </button>
+
           </form>
           <div class="pb-6 text-center">
             <p class="text-sm text-gray-600">

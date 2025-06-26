@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import {NgClass, NgIf} from '@angular/common';
-
 @Component({
   selector: 'app-login',
+  templateUrl: './login.component.html',
   imports: [
-    NgClass,
     NgIf,
     ReactiveFormsModule,
-    RouterLink
+    NgClass
   ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   isLoading = false;
@@ -20,7 +19,7 @@ export class LoginComponent {
   studentForm: FormGroup;
   mentorForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.studentForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -35,22 +34,39 @@ export class LoginComponent {
     this.selectedTab = tab;
   }
 
-  handleStudentLogin() {
+  // Manejo del login de estudiante
+  async handleStudentLogin() {
     if (this.studentForm.invalid) return;
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
+    const { email, password } = this.studentForm.value;
+
+    try {
+      const user = await this.authService.loginStudent(email, password);
+      console.log('Usuario autenticado como estudiante', user);
       this.router.navigate(['/estudiante/dashboard']);
-    }, 1500);
+    } catch (error) {
+      console.error('Error de autenticación', error);
+      // Aquí podrías agregar un mensaje para mostrar al usuario
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  handleMentorLogin() {
+  // Manejo del login de mentor
+  async handleMentorLogin() {
     if (this.mentorForm.invalid) return;
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      this.router.navigate(['/mentor/dashboard']);
-    }, 1500);
-  }
+    const { email, password } = this.mentorForm.value;
 
+    try {
+      const user = await this.authService.loginMentor(email, password);
+      console.log('Usuario autenticado como mentor', user);
+      this.router.navigate(['/mentor/dashboard']);
+    } catch (error) {
+      console.error('Error de autenticación', error);
+      // Aquí podrías agregar un mensaje para mostrar al usuario
+    } finally {
+      this.isLoading = false;
+    }
+  }
 }
