@@ -59,4 +59,9 @@ export class AuthService {
   logout(): void {
     this.sessionService.clearSession();  // Limpiamos la sesión
   }
+
+  getModulesByCourse(courseId: string, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/modulo/records?id=${courseId}`, { headers });
+  }
 }

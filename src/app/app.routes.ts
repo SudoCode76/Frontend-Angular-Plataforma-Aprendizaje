@@ -4,6 +4,7 @@ import {InicioComponent} from './components/inicio/inicio.component';
 import {DashboardEstudianteComponent} from './components/dashboard-estudiante/dashboard-estudiante.component';
 import {EncontrarMentorComponent} from './components/encontrar-mentor/encontrar-mentor.component';
 import {DashboardMentorComponent} from './components/dashboard-mentor/dashboard-mentor.component';
+import {ModuloComponent} from './components/modulo/modulo.component';
 
 export const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -11,6 +12,7 @@ export const routes: Routes = [
   {path: 'estudiante',
   children: [
     {path: 'dashboard', component: DashboardEstudianteComponent},
+    { path: 'modulo/:id', component: ModuloComponent },
     {path: 'encontrar-mentor', component: EncontrarMentorComponent},
   ]},
   {path: 'mentor',
