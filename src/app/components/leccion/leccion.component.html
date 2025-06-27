@@ -1,0 +1,305 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-10">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <a [routerLink]="['/estudiante/modulo', courseId]">
+            <button class="group flex items-center space-x-2 px-4 py-2 rounded-xl bg-gray-100/80 hover:bg-gray-200/80 text-gray-700 transition-all duration-300 hover:scale-105">
+              <svg class="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span class="font-medium">Volver</span>
+            </button>
+          </a>
+        </div>
+
+        <!-- Título del módulo -->
+        <div *ngIf="moduleData" class="flex-1 text-center">
+          <h1 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            {{ moduleData.titulo }}
+          </h1>
+          <p class="text-sm text-gray-600">{{ moduleData.descripcion }}</p>
+        </div>
+
+        <!-- Progress indicator -->
+        <div *ngIf="selectedLesson" class="flex items-center space-x-2 text-sm text-gray-600">
+          <span class="font-medium">{{ getCurrentLessonIndex() }}/{{ lessons.length }}</span>
+          <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
+                 [style.width.%]="getProgressPercentage()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="container mx-auto px-6 py-8">
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="flex flex-col items-center justify-center min-h-[400px]">
+      <div class="relative">
+        <div class="w-16 h-16 border-4 border-purple-200 rounded-full animate-spin border-t-purple-600"></div>
+      </div>
+      <p class="mt-4 text-lg font-medium text-gray-600">Cargando lecciones...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading && moduleData" class="grid lg:grid-cols-4 gap-8">
+
+      <!-- Video Player Section -->
+      <div class="lg:col-span-3">
+        <div *ngIf="selectedLesson" class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+          <!-- Video Header -->
+          <div class="p-6 border-b border-gray-100">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-2">
+                  <span class="px-3 py-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-medium rounded-full">
+                    Lección {{ selectedLesson.ordenIndice }}
+                  </span>
+                  <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    {{ getFileType(selectedLesson.contenido) }}
+                  </span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ selectedLesson.titulo }}</h2>
+                <p *ngIf="selectedLesson.contenido_texto" class="text-gray-600">{{ selectedLesson.contenido_texto }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Player -->
+          <div class="relative">
+            <video
+              #videoPlayer
+              class="w-full aspect-video bg-black"
+              controls
+              preload="metadata"
+              [src]="getVideoUrl(selectedLesson)"
+              (error)="onVideoError($event)"
+              (loadedmetadata)="onVideoLoaded()"
+              (timeupdate)="onTimeUpdate($event)">
+              <p class="text-white p-4">Tu navegador no soporta el elemento video.</p>
+            </video>
+
+            <!-- Video Error -->
+            <div *ngIf="videoError" class="absolute inset-0 flex items-center justify-center bg-gray-900">
+              <div class="text-center text-white p-8">
+                <svg class="h-16 w-16 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">Error al cargar el video</h3>
+                <p class="text-gray-300">{{ videoError }}</p>
+                <button (click)="retryVideo()" class="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
+                  Reintentar
+                </button>
+              </div>
+            </div>
+
+            <!-- Video Loading -->
+            <div *ngIf="videoLoading" class="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div class="text-center text-white">
+                <div class="w-12 h-12 border-4 border-white/30 rounded-full animate-spin border-t-white mx-auto mb-4"></div>
+                <p>Cargando video...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Controls -->
+          <div class="p-6 bg-gray-50/50">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <!-- Navigation Controls -->
+              <div class="flex space-x-3">
+                <button
+                  *ngIf="getPreviousLesson()"
+                  (click)="selectLesson(getPreviousLesson()!)"
+                  class="group flex items-center space-x-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition-all duration-300 hover:scale-105">
+                  <svg class="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span class="font-medium">Anterior</span>
+                </button>
+
+                <button
+                  *ngIf="getNextLesson()"
+                  (click)="selectLesson(getNextLesson()!)"
+                  class="group flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-105">
+                  <span class="font-medium">Siguiente</span>
+                  <svg class="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Video Progress Info -->
+              <div *ngIf="videoProgress > 0" class="flex items-center space-x-2 text-sm text-gray-600">
+                <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Progreso: {{ videoProgress }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No lesson selected -->
+        <div *ngIf="!selectedLesson && lessons.length > 0" class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl p-12 text-center">
+          <svg class="h-16 w-16 mx-auto mb-4 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Selecciona una lección</h3>
+          <p class="text-gray-600">Elige una lección de la lista para comenzar a aprender</p>
+        </div>
+      </div>
+
+      <!-- Lessons Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden sticky top-24">
+          <div class="p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+              <svg class="h-5 w-5 mr-2 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              Lecciones ({{ lessons.length }})
+            </h3>
+          </div>
+
+          <!-- No lessons -->
+          <div *ngIf="lessons.length === 0" class="p-6 text-center">
+            <svg class="h-12 w-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <p class="text-gray-500">No hay lecciones disponibles</p>
+          </div>
+
+          <!-- Lessons List -->
+          <div *ngIf="lessons.length > 0" class="max-h-[50vh] overflow-y-auto">
+            <div *ngFor="let lesson of lessons; let i = index"
+                 class="group relative border-b border-gray-100 last:border-b-0 hover:bg-purple-50/50 transition-all duration-300 cursor-pointer"
+                 [class.bg-gradient-to-r]="selectedLesson?.id === lesson.id"
+                 [class.from-purple-100]="selectedLesson?.id === lesson.id"
+                 [class.to-blue-100]="selectedLesson?.id === lesson.id"
+                 (click)="selectLesson(lesson)">
+
+              <div class="p-4">
+                <div class="flex items-start space-x-3">
+                  <!-- Lesson Number -->
+                  <div class="flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300"
+                         [class.bg-gradient-to-r]="selectedLesson?.id === lesson.id"
+                         [class.from-purple-600]="selectedLesson?.id === lesson.id"
+                         [class.to-blue-600]="selectedLesson?.id === lesson.id"
+                         [class.text-white]="selectedLesson?.id === lesson.id"
+                         [class.bg-gray-200]="selectedLesson?.id !== lesson.id"
+                         [class.text-gray-600]="selectedLesson?.id !== lesson.id"
+                         [class.group-hover:bg-purple-200]="selectedLesson?.id !== lesson.id">
+                      {{ lesson.ordenIndice }}
+                    </div>
+                  </div>
+
+                  <!-- Lesson Info -->
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-sm text-gray-800 mb-1 line-clamp-2 group-hover:text-purple-700 transition-colors">
+                      {{ lesson.titulo }}
+                    </h4>
+                    <div class="flex items-center space-x-2 text-xs text-gray-500">
+                      <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                      <span>{{ getFileType(lesson.contenido) }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Status Indicator -->
+                  <div class="flex-shrink-0">
+                    <div *ngIf="selectedLesson?.id === lesson.id" class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Help Section - MOVIDO AQUÍ DEBAJO DE LAS LECCIONES -->
+          <div *ngIf="lessons.length > 0" class="p-6 border-t border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+              <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+                <svg class="h-4 w-4 mr-2 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                ¿Necesitas Ayuda?
+              </h3>
+              <p class="text-sm text-gray-600 mb-3">
+                Si tienes dudas sobre esta lección específica, puedes contactar directamente con un mentor especializado.
+              </p>
+              <button
+                (click)="requestHelpWithLesson()"
+                class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all duration-300 hover:scale-105 shadow-md">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span class="font-medium">Ayuda con esta Lección</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="!isLoading && !moduleData" class="text-center py-12">
+      <svg class="h-16 w-16 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="15" y1="9" x2="9" y2="15"></line>
+        <line x1="9" y1="9" x2="15" y2="15"></line>
+      </svg>
+      <h3 class="text-xl font-semibold text-red-600 mb-2">Error al cargar el módulo</h3>
+      <p class="text-gray-600 mb-4">No se pudieron cargar los datos del módulo</p>
+      <a [routerLink]="['/estudiante/modulo', courseId]"
+         class="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+        Volver a intentar
+      </a>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div *ngIf="showHelpModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="closeHelpModal()">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6" (click)="$event.stopPropagation()">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-2">¿Necesitas Ayuda?</h3>
+        <p class="text-gray-600 mb-6">
+          Nuestros mentores especializados están aquí para ayudarte con esta lección específica.
+        </p>
+
+        <div class="space-y-3">
+          <button
+            (click)="connectWithMentor()"
+            class="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-105">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="font-medium">Conectar con Mentor</span>
+          </button>
+
+          <button
+            (click)="closeHelpModal()"
+            class="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

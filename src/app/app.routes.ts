@@ -5,6 +5,7 @@ import {DashboardEstudianteComponent} from './components/dashboard-estudiante/da
 import {EncontrarMentorComponent} from './components/encontrar-mentor/encontrar-mentor.component';
 import {DashboardMentorComponent} from './components/dashboard-mentor/dashboard-mentor.component';
 import {ModuloComponent} from './components/modulo/modulo.component';
+import {LeccionComponent} from './components/leccion/leccion.component';
 
 export const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -13,6 +14,7 @@ export const routes: Routes = [
   children: [
     {path: 'dashboard', component: DashboardEstudianteComponent},
     { path: 'modulo/:id', component: ModuloComponent },
+    { path: 'modulo/:courseId/lecciones/:moduleId', component: LeccionComponent }, // Ruta corregida
     {path: 'encontrar-mentor', component: EncontrarMentorComponent},
   ]},
   {path: 'mentor',

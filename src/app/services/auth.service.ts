@@ -1,14 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {SessionService} from './session.service';
+import { SessionService } from './session.service';
+import { StorageService } from './storage.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private sessionService: SessionService) {}
+  constructor(
+    private http: HttpClient,
+    private sessionService: SessionService,
+    private storageService: StorageService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   // Función para autenticar al estudiante
   loginStudent(email: string, password: string): Observable<any> {
@@ -24,7 +31,7 @@ export class AuthService {
 
   // Función para guardar los datos del usuario en la sesión
   storeUserData(authData: any): void {
-    this.sessionService.setSession(authData.record, authData.token);  // Guardamos en el servicio de sesión
+    this.sessionService.setSession(authData.record, authData.token);
   }
 
   // Función para obtener los datos del estudiante
@@ -39,29 +46,44 @@ export class AuthService {
     return this.http.get<any>('http://100.120.141.83:8090/api/collections/curso/records', { headers });
   }
 
-  // Obtener lecciones de un curso
-  getLessons(courseId: string, token: string): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/leccion/records?curso_idcurso=${courseId}`, { headers });
-  }
-
   // Función para verificar si el usuario está autenticado
   isAuthenticated(): boolean {
-    return this.sessionService.isAuthenticated();  // Usamos el servicio de sesión para verificar la autenticación
+    if (isPlatformBrowser(this.platformId)) {
+      return this.sessionService.isAuthenticated();
+    }
+    return false;
   }
 
   // Función para obtener el token
   getToken(): string | null {
-    return this.sessionService.getToken();
+    return this.storageService.getItem('token');
   }
 
   // Función para cerrar sesión
   logout(): void {
-    this.sessionService.clearSession();  // Limpiamos la sesión
+    this.sessionService.clearSession();
   }
 
   getModulesByCourse(courseId: string, token: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get<any>(`http://100.120.141.83:8090/api/collections/modulo/records?id=${courseId}`, { headers });
+  }
+
+  // Obtener un módulo específico por ID
+  getModuleById(moduleId: string, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/modulo/records/${moduleId}`, { headers });
+  }
+
+  // Obtener todas las lecciones
+  getLessons(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>('http://100.120.141.83:8090/api/collections/leccion/records', { headers });
+  }
+
+  // Obtener una lección específica por ID
+  getLessonById(lessonId: string, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/leccion/records/${lessonId}`, { headers });
   }
 }
