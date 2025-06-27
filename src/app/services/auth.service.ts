@@ -86,4 +86,23 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get<any>(`http://100.120.141.83:8090/api/collections/leccion/records/${lessonId}`, { headers });
   }
+
+
+  // Obtener lenguajes de programación
+  getProgrammingLanguages(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>('http://100.120.141.83:8090/api/collections/lenguajeProgramacion/records', { headers });
+  }
+
+// Obtener mentores
+  getMentors(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>('http://100.120.141.83:8090/api/collections/mentor/records', { headers });
+  }
+
+// Obtener mentores por lenguaje
+  getMentorsByLanguage(languageId: string, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/mentor/records?filter=(lenguajep_idlenguajep~"${languageId}")`, { headers });
+  }
 }
