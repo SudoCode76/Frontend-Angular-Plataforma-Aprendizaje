@@ -105,4 +105,23 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get<any>(`http://100.120.141.83:8090/api/collections/mentor/records?filter=(lenguajep_idlenguajep~"${languageId}")`, { headers });
   }
+
+
+  // Obtener datos del mentor
+  getMentorData(mentorId: string, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`http://100.120.141.83:8090/api/collections/mentor/records/${mentorId}`, { headers });
+  }
+
+// Actualizar mentor
+  updateMentor(mentorId: string, mentorData: any, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.patch<any>(`http://100.120.141.83:8090/api/collections/mentor/records/${mentorId}`, mentorData, { headers });
+  }
+
+// Obtener idiomas
+  getLanguages(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>('http://100.120.141.83:8090/api/collections/idioma/records', { headers });
+  }
 }

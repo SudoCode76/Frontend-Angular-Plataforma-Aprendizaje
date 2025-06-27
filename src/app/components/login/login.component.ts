@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { StorageService } from '../../services/storage.service';
 import { NgClass, NgIf } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -10,91 +12,97 @@ import { NgClass, NgIf } from '@angular/common';
   imports: [
     NgClass,
     ReactiveFormsModule,
-    NgIf
+    NgIf,
+    RouterLink
   ],
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  isLoading = false; // Estado para mostrar el cargador mientras se procesa el inicio de sesión
-  selectedTab: 'student' | 'mentor' = 'student'; // Para alternar entre los formularios de estudiante y mentor
-  studentForm: FormGroup; // Formulario para estudiante
-  mentorForm: FormGroup; // Formulario para mentor
-  errorMessage: string | null = null; // Mensaje de error para mostrar en el formulario
+  isLoading = false;
+  selectedTab: 'student' | 'mentor' = 'student';
+  studentForm: FormGroup;
+  mentorForm: FormGroup;
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Inicializamos los formularios con validaciones
     this.studentForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],  // Validación para el email
-      password: ['', Validators.required]  // Validación para la contraseña
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
 
     this.mentorForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],  // Validación para el email
-      password: ['', Validators.required]  // Validación para la contraseña
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
   }
 
-  // Cambiar entre el formulario de estudiante y mentor
   switchTab(tab: 'student' | 'mentor') {
     this.selectedTab = tab;
+    this.errorMessage = null; // Limpiar errores al cambiar de tab
   }
 
-  // Manejo del inicio de sesión del estudiante
   handleStudentLogin() {
-    if (this.studentForm.invalid) return;  // Si el formulario es inválido, no hacer nada
-    this.isLoading = true;  // Activamos el cargador
-    this.errorMessage = null; // Limpiamos el mensaje de error
+    if (this.studentForm.invalid) return;
+    this.isLoading = true;
+    this.errorMessage = null;
 
-    const { email, password } = this.studentForm.value;  // Obtenemos los valores del formulario
+    const { email, password } = this.studentForm.value;
 
     this.authService.loginStudent(email, password).subscribe(
       (authData) => {
         console.log('Usuario autenticado como estudiante', authData);
-        // Guardamos el ID del estudiante y el token en el localStorage
-        localStorage.setItem('studentId', authData.record.id);
-        localStorage.setItem('token', authData.token);
-        this.router.navigate(['/estudiante/dashboard']);  // Redirigimos al dashboard
+
+        // Usar StorageService en lugar de localStorage
+        if (isPlatformBrowser(this.platformId)) {
+          this.storageService.setItem('studentId', authData.record.id);
+          this.storageService.setItem('token', authData.token);
+        }
+
+        this.router.navigate(['/estudiante/dashboard']);
       },
       (error) => {
         console.error('Error de autenticación', error);
-        // Mostramos el mensaje de error cuando las credenciales son incorrectas
         this.errorMessage = 'Las credenciales son incorrectas. Por favor, verifica tu email y contraseña.';
-        this.isLoading = false;  // Desactivamos el cargador una vez mostrado el error
+        this.isLoading = false;
       },
       () => {
-        this.isLoading = false;  // Desactivamos el cargador
+        this.isLoading = false;
       }
     );
   }
 
-  // Manejo del inicio de sesión del mentor
   handleMentorLogin() {
-    if (this.mentorForm.invalid) return;  // Si el formulario es inválido, no hacer nada
-    this.isLoading = true;  // Activamos el cargador
-    this.errorMessage = null; // Limpiamos el mensaje de error
+    if (this.mentorForm.invalid) return;
+    this.isLoading = true;
+    this.errorMessage = null;
 
-    const { email, password } = this.mentorForm.value;  // Obtenemos los valores del formulario
+    const { email, password } = this.mentorForm.value;
 
     this.authService.loginMentor(email, password).subscribe(
       (authData) => {
         console.log('Usuario autenticado como mentor', authData);
-        // Guardamos el ID del mentor y el token en el localStorage
-        localStorage.setItem('mentorId', authData.record.id);
-        localStorage.setItem('token', authData.token);
-        this.router.navigate(['/mentor/dashboard']);  // Redirigimos al dashboard del mentor
+
+        // Usar StorageService en lugar de localStorage
+        if (isPlatformBrowser(this.platformId)) {
+          this.storageService.setItem('mentorId', authData.record.id);
+          this.storageService.setItem('token', authData.token);
+        }
+
+        this.router.navigate(['/mentor/dashboard']);
       },
       (error) => {
         console.error('Error de autenticación', error);
-        // Mostramos el mensaje de error cuando las credenciales son incorrectas
         this.errorMessage = 'Las credenciales son incorrectas. Por favor, verifica tu email y contraseña.';
-        this.isLoading = false;  // Desactivamos el cargador una vez mostrado el error
+        this.isLoading = false;
       },
       () => {
-        this.isLoading = false;  // Desactivamos el cargador
+        this.isLoading = false;
       }
     );
   }
